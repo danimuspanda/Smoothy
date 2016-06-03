@@ -61,10 +61,8 @@ public class TesteGame {
     }
 
     public class BoardGame extends JPanel {
-    	/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+    	
+	private static final long serialVersionUID = 1L;
     	
     	
         public BoardGame() {
@@ -95,31 +93,26 @@ public class TesteGame {
                         }
                     }
                     cellPane.setBorder(border);
-                    add(cellPane, gbc);//adicionar o ladrilho ao painel do GUI
-                    board[col][row] = cellPane;//criar tabuleiro do jogo
+                    add(cellPane, gbc);
+                    board[col][row] = cellPane;//add CellPane tile to the board
                     
                     
             	}
                 
             }
             boardList.add(board);
-            start();
+            
         }
     
-	    public void start()
-	    {
-	    		
-	    }
+	    
     }
     public class CellPane extends JPanel
     {
 
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		public ArrayList<Color> cores = new ArrayList<Color>();
-		private Color Background;
+        
+	private static final long serialVersionUID = 1L;
+	public ArrayList<Color> colors = new ArrayList<Color>();
+	private Color Background;
 		
         public CellPane() 
         {
@@ -133,7 +126,6 @@ public class TesteGame {
             {
                 @Override
                 public void mouseEntered(MouseEvent e) {}
-
                 @Override
                 public void mouseExited(MouseEvent e) {}
                 @Override
@@ -142,9 +134,9 @@ public class TesteGame {
                 	List<CellPane> floodedTiles = new ArrayList<CellPane>();
                 	//board cell clicked
                 	CellPane startingTile = board[e.getComponent().getX()/50][e.getComponent().getY()/50];
-                	int x = startingTile.getX()/50;//x do ladrilho actual
-                	int y = startingTile.getY()/50;//y do ladrilho actual
-                	
+                	int x = startingTile.getX()/50;//x current tile
+                	int y = startingTile.getY()/50;//y of current tile
+                	//need to divide by 50 to get the right values 
                 	floodedTiles.add(startingTile);
                 	
                 	floodedTiles.addAll(BFS(startingTile));
@@ -168,12 +160,9 @@ public class TesteGame {
         	
         	newFloodedTiles = BFS(currentTile);
         	
-        	for (CellPane tile: floodedTiles){
-        		//tile.setBackground(Color.black);//flood os ladrilhos designados a null
-        		//for (List<Integer> value: floodedTiles.values()){
-        			
-        			board[tile.getX()/50][tile.getY()/50].setBackground(Color.BLACK);
-        		//}
+        	for (CellPane tile: floodedTiles)
+        	{
+        		board[tile.getX()/50][tile.getY()/50].setBackground(Color.BLACK);
         	}
         }
         public Set<CellPane> BFS(CellPane startingTile)
@@ -198,34 +187,34 @@ public class TesteGame {
         	
         }
         /*
-         * Para cada vizinho nos vizinhos no checkNeighbors e se vizinho nao estiver nos já inundados, retorna uma List
-         * um metodo para ajudar no metodo BFS
+         * for neighbor in neighbor in checkNeighbors if neighbor not in floodedTiles
+         * method Breadth first search
          */
         public List<CellPane> getOtherCells(CellPane currentTile, Set<CellPane> floodedTiles){
-        	List<CellPane> listResult = new ArrayList<CellPane>();//lista a retornar
-         	Map<CellPane, List<Integer>> otherTiles = new HashMap<CellPane, List<Integer>>();//mapa par
+        	List<CellPane> listResult = new ArrayList<CellPane>();
+         	Map<CellPane, List<Integer>> otherTiles = new HashMap<CellPane, List<Integer>>();
         	otherTiles = checkNeighbors(currentTile, currentTile.getX()/50, currentTile.getY()/50);//checkNeighbors(tile)
         	
         	for (CellPane ladrilho: otherTiles.keySet())
-        	{//para cada ladrilho nas chaves do mapa otherTiles
+        	{//for each tile in otherTiles keys
         		if (!floodedTiles.contains(ladrilho))
-        		{//se ladrilho nao estiver em floodedTiles
+        		{//add to listResult if not in floodedTiles
         			listResult.add(ladrilho);
         		}
         	}
 			return listResult;
         	
         }
-        //este metedo cria um mapa com as chaves as celulas e cada chave tem um x e um y
-        //das celulas que tem cor igual
-        //verifica na horizontal e vertical
+        //this method creates a map of neighbors of tile
+        //each key is a CellPane Object
+        //each value is a list with x and y
 		public Map<CellPane, List<Integer>> checkNeighbors(CellPane tile, int x, int y){
 			Map<CellPane, List<Integer>> neighbors = new HashMap<CellPane, List<Integer>>();
         	/*
-        	 * (0,-1) - Sul
-        	 * (0,1) - Norte
-        	 * (-1,0) - Oeste
-        	 * (1,0) - Este
+        	 * (0,-1) - SOUTH
+        	 * (0,1) - NORTH
+        	 * (-1,0) - WEST
+        	 * (1,0) - EAST
         	 */
 			int[] x_offset = { 0, 0,1, -1};
         	int[] y_offset = {-1, 1,0, 0};
@@ -233,9 +222,9 @@ public class TesteGame {
         		for (int ys:y_offset){
 	        		int tmpX = x + xs;
 	        		int tmpY = y + ys;
-	        		//System.out.println(tmpX + "   " + tmpY);
-	        		List<Integer> cords= new ArrayList<Integer>();//lista para conter as cordenadas dos ladrilhos
-	        		//cada ladrilho será uma chave no mapa neighbors
+	        		
+	        		List<Integer> cords= new ArrayList<Integer>();//coordenates of each tile.example (tileA, x, y)
+	        		//each tile is a key in neighbors
 	        		if ((0 <= tmpX && tmpX < ROWS) && (0 <= tmpY && tmpY< COLS)){
 	        			CellPane current = board[tmpX][tmpY];
 	        			if (board[tmpX][tmpY].getBackground().equals(tile.getBackground())){
@@ -257,10 +246,9 @@ public class TesteGame {
         }
         public void ColorsCreation() 
         {
-    		//graphics2D é como um pincel, ladrilho é como o papel
-    		
+
     		/*
-    		 * nota sobre as cores:
+    		 * colors to remember:
     		 * black = 0xff000000
     		 * red   = 0x00ff0000
     		 * green = 0x0000ff00
@@ -272,11 +260,11 @@ public class TesteGame {
     		Color blue = new Color(0x004FFF);
     		Color red = new Color(0xff0000);
     		Color yellow = new Color(0xFFFF00);
-    		cores.add(green);
-    		cores.add(black);
-    		cores.add(blue);
-    		cores.add(red);
-    		cores.add(yellow);
+    		colors.add(green);
+    		colors.add(black);
+    		colors.add(blue);
+    		colors.add(red);
+    		colors.add(yellow);
     		
         }
         public void drawImage() 
@@ -284,15 +272,13 @@ public class TesteGame {
         	Random r = new Random();
     		if (Background == null) 
     		{
-    			//se nao tiver cor, gerar uma cor
-    			//por agora será aleatorio
-    			//talves faça uma lista de cores que quero especificamente
-    			Background = cores.get(r.nextInt(cores.size()));//esta linha modifica as cores que o ladrilho terá
+    			//give tiles random colors from colors list
+    			Background = colors.get(r.nextInt(colors.size()));
     			setBackground(Background);
     		}else
     		{
-    			//cor preta para deixar de existir
-    			//ou entao remover completamente
+    			//black color means no tile
+    			
     			Background = Color.black;
     		}
         }
